@@ -7,6 +7,6 @@ import (
 )
 
 func (app *application) routes() http.Handler {
-	mux := chi.NewRouter
+	mux := chi.NewRouter()
 	return mux
 }

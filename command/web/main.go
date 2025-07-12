@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"http"
 	"log"
+	"net/http"
 	"os"
 	"time"
 )
@@ -37,7 +37,7 @@ type application struct {
 
 func (app *application) serve() error {
 	srv := &http.Server{
-		addr:              fmt.Sprintf(":%d", app.config.port),
+		Addr:              fmt.Sprintf(":%d", app.config.port),
 		Handler:           app.routes(),
 		IdleTimeout:       30 * time.Second,
 		ReadTimeout:       10 * time.Second,
@@ -76,6 +76,13 @@ func main() {
 		errorLog:      errorLog,
 		templateCache: tc,
 		version:       version,
+	}
+
+	err := app.serve()
+
+	if err != nil {
+		app.errorLog.Println(err)
+		log.Fatal(err)
 	}
 
 }
