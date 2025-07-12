@@ -1,5 +1,12 @@
 package main
 
+import (
+	"flag"
+	"html/template"
+	"log"
+	"os"
+)
+
 const version = "1.0.0"
 
 const cssVersion = "1"
@@ -17,7 +24,57 @@ type config struct {
 	}
 }
 
+type application struct {
+	config        config
+	infoLog       *log.Logger
+	errorLog      *log.Logger
+	templateCache map[string]*template.Template
+	version       string
+}
+
+type app := &application{
+		config: cfg,
+		infoLog : infoLog,
+		errorLog: errorLog,
+		templateCache: tc,
+		version: version,
+}
+
+func (app *application) serve() error {
+	srv := &http.Server {
+		addr: fmt.Sprintf(":%d", app.config.port),
+		Handler: app.routes(),
+		IdleTimeout: 30 * time.Second,
+		ReadTimeout: 10 * time.Second,
+		ReadHeaderTimeout: 5 * time.Second,
+		WriteTimeout: 5 *time.Second,
+
+	}
+
+	app.infoLog.Println("Starting HTTP server in %s mode on pord %d", app.config.env, app.config.port)
+}
+
 func main() {
 
-	return
+	var cfg config
+
+	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on")
+
+	flag.StringVar(&cfg.env, "env", "development", "Application environment {development | production}")
+
+	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
+
+	flag.Parse()
+
+	cfg.stripe.key = os.Getenv("STRIPE_KEY")
+	cfg.stripe.secret = os.Getenv("STRIPE_SECRET")
+
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	tc := make(map[string]*template.Template)
+
+	
+
 }
+
