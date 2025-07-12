@@ -2,9 +2,12 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"html/template"
+	"http"
 	"log"
 	"os"
+	"time"
 )
 
 const version = "1.0.0"
@@ -32,26 +35,19 @@ type application struct {
 	version       string
 }
 
-type app := &application{
-		config: cfg,
-		infoLog : infoLog,
-		errorLog: errorLog,
-		templateCache: tc,
-		version: version,
-}
-
 func (app *application) serve() error {
-	srv := &http.Server {
-		addr: fmt.Sprintf(":%d", app.config.port),
-		Handler: app.routes(),
-		IdleTimeout: 30 * time.Second,
-		ReadTimeout: 10 * time.Second,
+	srv := &http.Server{
+		addr:              fmt.Sprintf(":%d", app.config.port),
+		Handler:           app.routes(),
+		IdleTimeout:       30 * time.Second,
+		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
-		WriteTimeout: 5 *time.Second,
-
+		WriteTimeout:      5 * time.Second,
 	}
 
 	app.infoLog.Println("Starting HTTP server in %s mode on pord %d", app.config.env, app.config.port)
+
+	return srv.ListenAndServe()
 }
 
 func main() {
@@ -74,7 +70,12 @@ func main() {
 
 	tc := make(map[string]*template.Template)
 
-	
+	app := &application{
+		config:        cfg,
+		infoLog:       infoLog,
+		errorLog:      errorLog,
+		templateCache: tc,
+		version:       version,
+	}
 
 }
-
