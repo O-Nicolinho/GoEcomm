@@ -28,6 +28,16 @@ var functions = template.FuncMap{}
 var templateFS embed.FS
 
 func (app *application) addDefaultData(td *templateData, r *http.Request) *templateData {
+	if td == nil {
+		td = &templateData{}
+	}
+	if td.StringMap == nil {
+		td.StringMap = map[string]string{}
+	}
+
+	td.StringMap["api"] = app.config.api                    // you already had this
+	td.StringMap["publishable_key"] = app.config.stripe.key // ← NEW
+
 	return td
 }
 

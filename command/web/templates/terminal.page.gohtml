@@ -60,6 +60,8 @@
     <input type="hidden" name="payment_amount" id="payment_amount">
     <input type="hidden" name="payment_currency" id="payment_currency">
 
+    <input type="hidden" name="cardholder_name"  id="cardholder_name">
+    <input type="hidden" name="cardholder_email" id="cardholder_email">
 
 
 
@@ -175,6 +177,18 @@
       result.paymentIntent.status === "succeeded"
     ) {
       showCardSuccess();
+      document.getElementById("cardholder_name").value  = document.getElementById("cardholder-name").value;
+      document.getElementById("cardholder_email").value = document.getElementById("cardholder-email").value;
+
+      document.getElementById("payment_intent").value   = result.paymentIntent.id;
+      document.getElementById("payment_method").value   = result.paymentIntent.payment_method_types[0];
+
+      document.getElementById("payment_amount").value   =
+      (result.paymentIntent.amount / 100).toFixed(2);
+
+    document.getElementById("payment_currency").value = result.paymentIntent.currency;
+
+    document.getElementById("charge_form").submit();
     }
   })
   .catch((err) => {
