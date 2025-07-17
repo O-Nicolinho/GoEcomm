@@ -22,64 +22,51 @@ type jsonResponse struct {
 }
 
 func (app *application) GetPaymentIntent(w http.ResponseWriter, r *http.Request) {
-
-	var payload stripePayload
-
-	err := json.NewDecoder(r.Body).Decode(&payload)
-
-	if err != nil {
-		app.errorLog.Println(err)
+	// 1. Decode JSON coming from the browser
+	var p stripePayload
+	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
+		app.errorLog.Println("decode:", err)
+		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
 
-	amount, err := strconv.Atoi(payload.Amount)
-
+	// 2. Convert amount (string → int cents)
+	amountInt, err := strconv.Atoi(p.Amount)
 	if err != nil {
-		app.errorLog.Println(err)
+		http.Error(w, "amount must be a number", http.StatusBadRequest)
 		return
 	}
 
+	// 3. Create / charge the intent
 	card := cards.Card{
 		Secret:   app.config.stripe.secret,
 		Key:      app.config.stripe.key,
-		Currency: payload.Currency,
+		Currency: p.Currency,
 	}
 
-	okay := true
+	intent, msg, err := card.Charge(p.Currency, amountInt)
 
-	payint, msg, err := card.Charge(payload.Currency, amount)
+	// Always JSON:
+	w.Header().Set("Content-Type", "application/json")
 
-	if err != nil {
-		okay = false
+	if err == nil && intent != nil {
+		// ----- SUCCESS (HTTP 200) -----
+		json.NewEncoder(w).Encode(struct {
+			OK           bool   `json:"ok"`
+			ClientSecret string `json:"client_secret"`
+		}{
+			OK: true, ClientSecret: intent.ClientSecret,
+		})
+		return
 	}
 
-	if okay {
-		out, err := json.MarshalIndent(payint, "", "  ")
-		if err != nil {
-			app.errorLog.Println(err)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(out)
-
-	} else {
-		j := jsonResponse{
-			OK:      true,
-			Message: msg,
-			Content: "",
-		}
-
-		out, err := json.MarshalIndent(j, "", "  ")
-		if err != nil {
-			app.errorLog.Println(err)
-
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(out)
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(out)
-	}
-
+	// ----- ERROR (HTTP 400) -----
+	app.errorLog.Println("stripe:", err)
+	w.WriteHeader(http.StatusBadRequest)
+	json.NewEncoder(w).Encode(struct {
+		OK      bool   `json:"ok"`
+		Message string `json:"message"`
+	}{
+		OK: false, Message: msg, // e.g. “Your card was declined”
+	})
 }
