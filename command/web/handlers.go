@@ -1,6 +1,10 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/O-Nicolinho/GoEcomm/internal/models"
+)
 
 func (app *application) VirtualTerminal(w http.ResponseWriter, r *http.Request) {
 
@@ -9,7 +13,7 @@ func (app *application) VirtualTerminal(w http.ResponseWriter, r *http.Request) 
 
 	if err := app.renderTemplate(w, r, "terminal", &templateData{
 		StringMap: stringMap,
-	}); err != nil {
+	}, "stripe-js"); err != nil {
 		app.errorLog.Println(err)
 	}
 }
@@ -44,4 +48,25 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 		app.errorLog.Println(err)
 	}
 
+}
+
+// this func displays the page to buy some tea
+func (app *application) ChargeOnce(w http.ResponseWriter, r *http.Request) {
+
+	tea := models.Teas{
+		ID:           1,
+		Name:         "Green Tea",
+		Description:  "Chinese Green Tea",
+		InventoryAmt: 10,
+		Price:        1000,
+	}
+
+	data := make(map[string]interface{})
+	data["tea"] = tea
+
+	if err := app.renderTemplate(w, r, "buy-once", &templateData{
+		Data: data,
+	}, "stripe-js"); err != nil {
+		app.errorLog.Println(err)
+	}
 }

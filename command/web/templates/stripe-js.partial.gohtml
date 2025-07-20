@@ -1,0 +1,170 @@
+{{define "stripe-js"}}
+
+ <script src="https://js.stripe.com/v3/"></script>
+
+    <script>
+    let card;
+    let stripe;
+
+    stripe = Stripe('pk_test_51Rk9cpBQ0NqQW7hAbe29tHd0DP4vWkIj6FlVgTZAgnNdKuj2ppZ63k75FyUuyxWVaJFBqKiKzVHfuSNO1IPzblsH002cXYZoqp');
+
+
+    const cardMessages = document.getElementById("card-messages")
+    const payButton = document.getElementById("pay-button")
+    const processing = document.getElementById("processing-payment");
+
+    function hidePayButton() {
+        payButton.classList.add("d-none");
+        processing.classList.remove("d-none");
+    }
+
+    function showPayButtons() {
+        payButton.classList.remove("d-none")
+        processing.classList.add("d-none")
+    }
+
+    function showCardError(msg) {
+        cardMessages.classList.add("alert-danger");
+        cardMessages.classList.remove("alert-success");
+        cardMessages.classList.remove("d-none");
+        cardMessages.innerText = msg;
+    }
+
+    function showCardSuccess() {
+        processing.classList.add("d-none");
+        payButton.classList.remove("d-none");
+
+
+        cardMessages.classList.remove("alert-danger");
+        cardMessages.classList.add("alert-success");
+        cardMessages.classList.remove("d-none");
+        cardMessages.innerText = "Payment sucessful";
+    }
+
+    function val() {
+
+        let form = document.getElementById("charge_form");
+        if (form.checkValidity() == false) {
+            this.event.preventDefault();
+            this.event.stopPropagation();
+            form.classList.add("was-validated");
+            return;
+        }
+
+        form.classList.add("was-validated");
+        hidePayButton();
+
+        let amountToCharge = String(parseFloat(document.getElementById("amount").value * 100))
+        console.log(amountToCharge)
+
+        let payload = {
+            amount:amountToCharge,
+            currency: 'cad'
+        }
+
+        const requestOptions = {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+
+            },
+            body: JSON.stringify(payload),
+        }
+        fetch("http://localhost:4001/api/payment-intent", requestOptions)
+  .then(async (res) => {
+    const data = await res.text();        // raw body for debugging
+    console.log("RAW body →", data.length, "bytes:", data);
+
+    // try to parse (will throw on empty / invalid)
+    const json = data ? JSON.parse(data) : null;
+    return { ok: res.ok, json };
+  })
+  .then(({ ok, json }) => {
+    if (!ok) {
+      showCardError(json?.message || "Payment declined");
+      showPayButtons();
+      return;
+    }
+    // success → confirm with Stripe
+    return stripe.confirmCardPayment(json.client_secret, {
+      payment_method: {
+        card,
+        billing_details: {
+          name: document.getElementById("cardholder-name").value,
+        },
+      },
+    });
+  })
+  .then((result) => {
+    if (!result) return;                  // already handled error
+    if (result.error) {
+      showCardError(result.error.message);
+      showPayButtons();
+    } else if (
+      result.paymentIntent &&
+      result.paymentIntent.status === "succeeded"
+    ) {
+      showCardSuccess();
+      document.getElementById("cardholder_name").value  = document.getElementById("cardholder-name").value;
+      document.getElementById("cardholder_email").value = document.getElementById("cardholder-email").value;
+
+      document.getElementById("payment_intent").value   = result.paymentIntent.id;
+      document.getElementById("payment_method").value   = result.paymentIntent.payment_method_types[0];
+
+      document.getElementById("payment_amount").value   =
+      (result.paymentIntent.amount / 100).toFixed(2);
+
+    document.getElementById("payment_currency").value = result.paymentIntent.currency;
+
+    document.getElementById("charge_form").submit();
+    }
+  })
+  .catch((err) => {
+    console.error("Fetch/parse error:", err);
+    showCardError(err.message || "Unexpected error");
+    showPayButtons();
+  });
+
+    }
+
+    (function() {
+        // creates stripe and elements
+        const elements = stripe.elements();
+
+        const style = {
+            base: {
+                fontSize: '16px',
+                lineHeight: '24px',
+            }    
+        };
+
+        //create card entry
+        card = elements.create('card', {
+            style: style,
+            hidePostalCode: false,
+
+        });
+        card.mount("#card-element");
+
+        //check for input errs
+
+        card.addEventListener('change', function(event) {
+            var displayError = document.getElementById("card-errors");
+
+            if (event.error) {
+                displayError.classList.remove('d-none');
+                displayError.textContent = event.error.message;
+
+            } else {
+                displayError.classList.add('d-none');
+                displayError.textContent = '';
+
+            }
+
+        })
+    })();
+
+    </script>
+{{end}}
+

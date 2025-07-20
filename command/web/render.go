@@ -22,21 +22,20 @@ type templateData struct {
 	CSSVersion      string
 }
 
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"formatCurrency": formatCurrency,
+}
+
+func formatCurrency(n int) string {
+	f := float32(n / 100)
+	return fmt.Sprintf("$%.2f", f)
+}
 
 //go:embed templates/*.gohtml
 var templateFS embed.FS
 
 func (app *application) addDefaultData(td *templateData, r *http.Request) *templateData {
-	if td == nil {
-		td = &templateData{}
-	}
-	if td.StringMap == nil {
-		td.StringMap = map[string]string{}
-	}
-
-	td.StringMap["api"] = app.config.api                    // you already had this
-	td.StringMap["publishable_key"] = app.config.stripe.key // ← NEW
+	td.API = app.config.api
 
 	return td
 }
