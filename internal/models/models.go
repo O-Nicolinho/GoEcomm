@@ -68,6 +68,7 @@ type Transaction struct {
 	TransactionStatusID int       `json:"transaction_status_id"`
 	TimeCreated         time.Time `json:"-"`
 	TimeUpdated         time.Time `json:"-"`
+	CustomerID          int       `json:"customer_id"`
 }
 
 type User struct {
@@ -76,6 +77,15 @@ type User struct {
 	LastName    string    `json:"last_name"`
 	Email       string    `json:"email"`
 	Password    string    `json:"password"`
+	TimeCreated time.Time `json:"-"`
+	TimeUpdated time.Time `json:"-"`
+}
+
+type Customer struct {
+	ID          int       `json:"id"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	Email       string    `json:"email"`
 	TimeCreated time.Time `json:"-"`
 	TimeUpdated time.Time `json:"-"`
 }

@@ -1,1 +1,1 @@
-drop_columb("teas", "image")
+drop_column("teas", "image")
