@@ -12,7 +12,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/virtual-terminal", app.VirtualTerminal)
 	mux.Post("/payment-succeeded", app.PaymentReceipt)
 
-	mux.Get("/charge-once", app.ChargeOnce)
+	mux.Get("/tea/{id}", app.ChargeOnce)
 
 	fileServer := http.FileServer(http.Dir("./static"))
 

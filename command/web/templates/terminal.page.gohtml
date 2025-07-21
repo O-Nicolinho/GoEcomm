@@ -19,9 +19,9 @@
 
 
         <div class="mb-3">
-            <label for="amount" class="form-label">Amount</label>
-            <input type="text" class="form-control" id="amount" name="amount"
-                required="" autocomplete="amount-new">
+            <label for="charge_amount" class="form-label">Amount</label>
+            <input type="text" class="form-control" id="charge_amount"
+                required="" autocomplete="charge_amount-new">
         
         </div>
 
@@ -55,6 +55,9 @@
             </div>
         </div>
 
+
+    <input type="hidden" name="amount" id="amount">
+
     <input type="hidden" name="payment_intent" id="payment_intent">
     <input type="hidden" name="payment_method" id="payment_method">
     <input type="hidden" name="payment_amount" id="payment_amount">
@@ -70,6 +73,18 @@
 {{end}}
 
 {{define "js"}}
+
+<script>
+  const visible = document.getElementById("charge_amount");
+  const hidden  = document.getElementById("amount");
+
+  visible.addEventListener("input", evt => {
+    const v = parseFloat(evt.target.value);
+    hidden.value = Number.isFinite(v) ? Math.round(v * 100) : 0;
+  });
+</script>
+
+
 
 {{template "stripe-js" .}}
    

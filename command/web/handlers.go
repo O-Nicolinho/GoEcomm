@@ -2,8 +2,10 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
-	"github.com/O-Nicolinho/GoEcomm/internal/models"
+	"github.com/O-Nicolinho/GoEcomm/internal/cards"
+	"github.com/go-chi/chi/v5"
 )
 
 func (app *application) VirtualTerminal(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +35,17 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 	paymentAmount := r.Form.Get("payment_amount")
 	paymentCurrency := r.Form.Get("payment_currency")
 
+	card := cards.Card{
+		Secret: app.config.stripe.secret,
+		Key:    app.config.stripe.key,
+	}
+
+	pi, err := card.RetrievePaymentIntent(paymentIntent)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
 	data := make(map[string]interface{})
 
 	data["cardholder"] = cardHolder
@@ -53,12 +66,12 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 // this func displays the page to buy some tea
 func (app *application) ChargeOnce(w http.ResponseWriter, r *http.Request) {
 
-	tea := models.Teas{
-		ID:           1,
-		Name:         "Green Tea",
-		Description:  "Chinese Green Tea",
-		InventoryAmt: 10,
-		Price:        1000,
+	id := chi.URLParam(r, "id")
+	teaID, _ := strconv.Atoi(id)
+	tea, err := app.DB.GetTea(teaID)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
 	}
 
 	data := make(map[string]interface{})

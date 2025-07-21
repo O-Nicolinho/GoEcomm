@@ -86,11 +86,95 @@ func (m *DBModel) GetTea(id int) (Teas, error) {
 
 	var tea Teas
 
-	row := m.DB.QueryRowContext(ctx, "select id, name from tea_stock where id = ?", id)
-	err := row.Scan(&tea.ID, &tea.Name)
+	row := m.DB.QueryRowContext(ctx, `select 
+	id, name, description, inventory_level, price, coalesce(image,''),
+	created_at, updated_at
+	from 
+	teas
+	where id = ?`, id)
+	err := row.Scan(
+		&tea.ID,
+		&tea.Name,
+		&tea.Description,
+		&tea.InventoryAmt,
+		&tea.Price,
+		&tea.Image,
+		&tea.TimeCreated,
+		&tea.TimeUpdated,
+	)
 	if err != nil {
 		return tea, err
 	}
 
 	return tea, nil
+}
+
+// inserts a new txn in the DB and returns its ID
+func (m *DBModel) InsertTransaction(txn Transaction) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+		insert into transactions
+			(amount, currency, last_four, bank_return_code,
+			transaction_status_id, created_at, updated_at)
+			values (?, ?, ?, ?, ?, ?, ?)
+			`
+	result, err := m.DB.ExecContext(ctx, stmt,
+		txn.Amount,
+		txn.Currency,
+		txn.LastFour,
+		txn.BankReturnCode,
+		txn.TransactionStatusID,
+		time.Now(),
+		time.Now(),
+	)
+
+	if err != nil {
+		return 0, err
+
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
+}
+
+// inserts a new order and returns it's ID
+func (m *DBModel) InsertOrder(order Order) (int, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+		insert into orders
+			(tea_id, transaction_id, status_id, quantity,
+			amount, created_at, updated_at)
+			values (?, ?, ?, ?, ?, ?, ?)
+			`
+	result, err := m.DB.ExecContext(ctx, stmt,
+		order.TeaID,
+		order.TransactionID,
+		order.StatusID,
+		order.Quantity,
+		order.Amount,
+
+		time.Now(),
+		time.Now(),
+	)
+
+	if err != nil {
+		return 0, err
+
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }
