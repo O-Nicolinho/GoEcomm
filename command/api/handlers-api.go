@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/O-Nicolinho/GoEcomm/internal/cards"
 )
 
@@ -69,4 +71,18 @@ func (app *application) GetPaymentIntent(w http.ResponseWriter, r *http.Request)
 	}{
 		OK: false, Message: msg, // e.g. “Your card was declined”
 	})
+}
+
+func (app *application) GetTeaByID(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	teaID, _ := strconv.Atoi(id)
+	tea, err := app.DB.GetTea(teaID)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	out, err := json.MarshalIndent(tea, "", "  ")
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
 }

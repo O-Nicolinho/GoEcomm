@@ -20,5 +20,7 @@ func (app *application) routes() http.Handler {
 
 	mux.MethodFunc("POST", "/api/payment-intent", app.GetPaymentIntent)
 
+	mux.Get("/api/tea/{id}", app.GetTeaByID)
+
 	return mux
 }
