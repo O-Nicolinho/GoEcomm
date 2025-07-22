@@ -10,6 +10,7 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
+	github.com/alexedwards/scs/v2 v2.9.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/cockroachdb/cockroach-go v2.0.1+incompatible // indirect
 	github.com/fatih/color v1.18.0 // indirect
