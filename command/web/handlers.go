@@ -3,8 +3,10 @@ package main
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/O-Nicolinho/GoEcomm/internal/cards"
+	"github.com/O-Nicolinho/GoEcomm/internal/models"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -42,12 +44,14 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cardHolder := r.Form.Get("cardholder_name")
+	firstName := r.Form.Get("first_name")
+	lastName := r.Form.Get("last_name")
 	email := r.Form.Get("cardholder_email")
 	paymentIntent := r.Form.Get("payment_intent")
 	paymentMethod := r.Form.Get("payment_method")
 	paymentAmount := r.Form.Get("payment_amount")
 	paymentCurrency := r.Form.Get("payment_currency")
+	teaID, _ := strconv.Atoi(r.Form.Get("product_id"))
 
 	card := cards.Card{
 		Secret: app.config.stripe.secret,
@@ -73,9 +77,66 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 
 	expiryYear := pm.Card.ExpYear
 
+	//create new customer
+
+	customerID, err := app.SaveCustomer(firstName, lastName, email)
+
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	app.infoLog.Print(customerID)
+
+	//finally create new transaction
+
+	amount, err := strconv.Atoi(paymentAmount)
+
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	txn := models.Transaction{
+		Amount:              amount,
+		Currency:            paymentCurrency,
+		LastFour:            lastFour,
+		ExpiryMonth:         int(expiryMonth),
+		ExpiryYear:          int(expiryYear),
+		BankReturnCode:      pi.Charges.Data[0].ID,
+		TransactionStatusID: 2,
+	}
+
+	txnID, err := app.SaveTransaction(txn)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	//create new order
+
+	order := models.Order{
+		TeaID:         teaID,
+		TransactionID: txnID,
+		CustomerID:    customerID,
+		StatusID:      1,
+		Quantity:      1,
+		Amount:        amount,
+		TimeCreated:   time.Now(),
+		TimeUpdated:   time.Now(),
+	}
+
+	_, err = app.SaveOrder(order)
+
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	// =========== ============
+
 	data := make(map[string]interface{})
 
-	data["cardholder"] = cardHolder
 	data["email"] = email
 	data["pi"] = paymentIntent
 	data["pm"] = paymentMethod
@@ -92,6 +153,40 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 		app.errorLog.Println(err)
 	}
 
+}
+
+func (app *application) SaveCustomer(firstName, lastName, email string) (int, error) {
+	customer := models.Customer{
+		FirstName: firstName,
+		LastName:  lastName,
+		Email:     email,
+	}
+
+	id, err := app.DB.InsertCustomer(customer)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (app *application) SaveTransaction(txn models.Transaction) (int, error) {
+
+	id, err := app.DB.InsertTransaction((txn))
+
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (app *application) SaveOrder(order models.Order) (int, error) {
+
+	id, err := app.DB.InsertOrder(order)
+
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
 // this func displays the page to buy some tea
