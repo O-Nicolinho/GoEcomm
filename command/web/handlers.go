@@ -90,12 +90,7 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 
 	//finally create new transaction
 
-	amount, err := strconv.Atoi(paymentAmount)
-
-	if err != nil {
-		app.errorLog.Println(err)
-		return
-	}
+	amount, _ := strconv.Atoi(paymentAmount)
 
 	txn := models.Transaction{
 		Amount:              amount,
@@ -104,6 +99,8 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 		ExpiryMonth:         int(expiryMonth),
 		ExpiryYear:          int(expiryYear),
 		BankReturnCode:      pi.Charges.Data[0].ID,
+		PaymentIntent:       paymentIntent,
+		PaymentMethod:       paymentMethod,
 		TransactionStatusID: 2,
 	}
 
@@ -146,13 +143,26 @@ func (app *application) PaymentReceipt(w http.ResponseWriter, r *http.Request) {
 	data["expiry_month"] = expiryMonth
 	data["expiry_year"] = expiryYear
 	data["bank_return_code"] = pi.Charges.Data[0].ID
+	data["first_name"] = firstName
+	data["last_name"] = lastName
 
-	if err := app.renderTemplate(w, r, "succeeded", &templateData{
+	// redirection
+
+	app.Session.Put(r.Context(), "receipt", data)
+
+	http.Redirect(w, r, "/receipt", http.StatusSeeOther)
+
+}
+
+func (app *application) Receipt(w http.ResponseWriter, r *http.Request) {
+	data := app.Session.Get(r.Context(), "receipt").(map[string]interface{})
+
+	app.Session.Remove(r.Context(), "receipt")
+	if err := app.renderTemplate(w, r, "receipt", &templateData{
 		Data: data,
 	}); err != nil {
 		app.errorLog.Println(err)
 	}
-
 }
 
 func (app *application) SaveCustomer(firstName, lastName, email string) (int, error) {
