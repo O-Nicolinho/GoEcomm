@@ -54,7 +54,7 @@
         form.classList.add("was-validated");
         hidePayButton();
 
-        let amountToCharge = document.getElementById("amount").value;
+        let amountToCharge = document.getElementById("payment_amount").value;
         console.log(amountToCharge)
 
         let payload = {
@@ -112,9 +112,12 @@
       document.getElementById("payment_intent").value   = result.paymentIntent.id;
       document.getElementById("payment_method").value   = result.paymentIntent.payment_method;
 
-      document.getElementById("payment_amount").value   =
+     /* document.getElementById("payment_amount").value   =
       (result.paymentIntent.amount / 100).toFixed(2);
-
+*/
+      document.getElementById("payment_amount").value =
+      result.paymentIntent.amount;
+      
     document.getElementById("payment_currency").value = result.paymentIntent.currency;
 
     document.getElementById("charge_form").submit();

@@ -56,7 +56,6 @@
         </div>
 
 
-    <input type="hidden" name="amount" id="amount">
 
     <input type="hidden" name="payment_intent" id="payment_intent">
     <input type="hidden" name="payment_method" id="payment_method">
@@ -76,7 +75,7 @@
 
 <script>
   const visible = document.getElementById("charge_amount");
-  const hidden  = document.getElementById("amount");
+  const hidden  = document.getElementById("payment_amount");
 
   visible.addEventListener("input", evt => {
     const v = parseFloat(evt.target.value);
