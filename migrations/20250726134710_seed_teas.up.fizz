@@ -1,0 +1,53 @@
+
+raw(`
+INSERT INTO teas
+    (name, description, inventory_level, price, created_at, updated_at, image)
+VALUES
+    ('Evergreen Sencha',
+     'A bright Japanese green tea with grassy sweetness and a hint of steamed spinach.',
+     120, 899, NOW(), NOW(), 'evergreen-sencha.jpg'),
+
+    ('Golden Assam Breakfast',
+     'Full‑bodied Indian black tea; bold malt flavor and a natural honey finish—perfect with milk.',
+     150, 749, NOW(), NOW(), 'golden-assam.jpg'),
+
+    ('Wildflower Oolong',
+     'Hand‑rolled leaves that unfurl into orchid‑sweet, peachy infusions and a creamy mouthfeel.',
+     100, 1199, NOW(), NOW(), 'wildflower-oolong.jpg'),
+
+    ('Silk Jasmine Pearls',
+     'Delicate green tea pearls scented six times with fresh jasmine blossoms for a soft floral cup.',
+     80, 1299, NOW(), NOW(), 'silk-jasmine-pearls.jpg'),
+
+    ('Amber Honeybush Rooibos',
+     'South‑African honeybush with notes of caramel, dried apricot, and warm spices.',
+     90, 699, NOW(), NOW(), 'amber-honeybush.jpg'),
+
+    ('High‑Mountain Ali Shan',
+     'Taiwanese oolong grown above 1 200 m; buttery texture with gardenia and sugarcane aromatics.',
+     60, 1599, NOW(), NOW(), 'ali-shan.jpg'),
+
+    ('Lemon‑Ginger Zest Herbal',
+     'Bright lemongrass, spicy ginger, and citrus peel—soothing hot or refreshing iced.',
+     110, 649, NOW(), NOW(), 'lemon-ginger-zest.jpg'),
+
+    ('Imperial Earl Grey',
+     'Bergamot‑infused Ceylon black tea balanced with a touch of lavender for extra elegance.',
+     140, 799, NOW(), NOW(), 'imperial-earl-grey.jpg'),
+
+    ('Ceremonial Matcha Jade',
+     'Shade‑grown tencha stone‑milled into vibrant powder; creamy umami and a lingering sweetness.',
+     50, 1899, NOW(), NOW(), 'matcha-jade.jpg'),
+
+    ('Moroccan Mint Gunpowder',
+     'Chinese green tea rolled into pellets blended with spearmint—crisp, cooling, and revitalizing.',
+     130, 749, NOW(), NOW(), 'moroccan-mint.jpg'),
+
+    ('Vanilla Chai Spice',
+     'Robust Assam tossed with whole cloves, cinnamon, cardamom, and real vanilla bean.',
+     120, 849, NOW(), NOW(), 'vanilla-chai.jpg'),
+
+    ('Himalayan White Cloud',
+     'Spring‑pluck buds from Nepali gardens; silky texture with melon, hay, and alpine wildflower notes.',
+     70, 1499, NOW(), NOW(), 'white-cloud.jpg');
+`)

@@ -1,0 +1,17 @@
+raw(`
+DELETE FROM teas
+WHERE name IN (
+    'Evergreen Sencha',
+    'Golden Assam Breakfast',
+    'Wildflower Oolong',
+    'Silk Jasmine Pearls',
+    'Amber Honeybush Rooibos',
+    'High‑Mountain Ali Shan',
+    'Lemon‑Ginger Zest Herbal',
+    'Imperial Earl Grey',
+    'Ceremonial Matcha Jade',
+    'Moroccan Mint Gunpowder',
+    'Vanilla Chai Spice',
+    'Himalayan White Cloud'
+);
+`)
