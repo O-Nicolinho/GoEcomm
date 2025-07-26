@@ -1,15 +1,22 @@
 {{template "base" . }}
 
 {{define "title"}}
-    Virtual Terminal
+    donate
 {{end}}
 
 {{define "content"}}
 
-<h2 class="mt-3 text-center">Virtual Terminal</h2>
+<h2 class="mt-3 text-center">Support Sustainability!</h2>
 <hr>
 
+<p class="lead">
+    If the tea our honest and hardworking partners produce has made your day a little better, consider giving a little in return. Each dollar you donate is used to fund initiatives in the countries where our leaves are grown—micro‑loans that help small farms buy eco‑friendly equipment, reforestation programs that keep mountain soil healthy, and training workshops that teach climate‑smart cultivation. Last season, donations from customers like you funded the planting of 3,000 shade trees on family‑run tea gardens in Assam, India—providing cooler canopies for the bushes and extra income from fruit harvests. Together we can ensure every sip supports the people and landscapes that make <strong>The Lion Turtle Tea Company</strong> possible.
+</p>
+
 <div class="alert alert-danger text-center d-none" id="card-messages"></div>
+
+
+
 
 <form action="/payment-succeeded" method="post"
     name="charge_form" id="charge_form"

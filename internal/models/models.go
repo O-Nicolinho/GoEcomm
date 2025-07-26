@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -124,6 +125,56 @@ func (m *DBModel) GetTea(id int) (Teas, error) {
 	return tea, nil
 }
 
+// returns all teas from the DB
+func (m *DBModel) AllTeas() ([]Teas, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `
+		SELECT id, name, description, inventory_level, price,
+		       COALESCE(image,''), created_at, updated_at
+		FROM   teas
+		ORDER BY name
+	`
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var teas []Teas
+	for rows.Next() {
+		var t Teas
+		err = rows.Scan(
+			&t.ID, &t.Name, &t.Description, &t.InventoryAmt,
+			&t.Price, &t.Image, &t.TimeCreated, &t.TimeUpdated,
+		)
+		if err != nil {
+			return nil, err
+		}
+		teas = append(teas, t)
+	}
+
+	return teas, nil
+}
+
+func (m *DBModel) DecrementInventory(tx *sql.Tx, teaID, qty int) error {
+	res, err := tx.Exec(`
+		UPDATE teas
+		SET    inventory_level = inventory_level - ?
+		WHERE  id = ? AND inventory_level >= ?`,
+		qty, teaID, qty,
+	)
+	if err != nil {
+		return err
+	}
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		return errors.New("not enough stock")
+	}
+	return nil
+}
+
 // inserts a new txn in the DB and returns its ID
 func (m *DBModel) InsertTransaction(txn Transaction) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -229,5 +280,24 @@ func (m *DBModel) InsertCustomer(c Customer) (int, error) {
 		return 0, err
 	}
 
+	return int(id), nil
+}
+
+func (m *DBModel) InsertOrderTx(tx *sql.Tx, order Order) (int, error) {
+	stmt := `
+		INSERT INTO orders
+		    (tea_id, transaction_id, status_id, quantity, customer_id,
+		     amount, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`
+	res, err := tx.Exec(stmt,
+		order.TeaID, order.TransactionID, order.StatusID,
+		order.Quantity, order.CustomerID, order.Amount,
+		time.Now(), time.Now(),
+	)
+	if err != nil {
+		return 0, err
+	}
+	id, _ := res.LastInsertId()
 	return int(id), nil
 }

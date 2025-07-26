@@ -13,6 +13,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="/static/css/theme.css">
 
     <title>
     {{block "title" . }}
@@ -27,18 +28,25 @@
   <body>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#"></a>
+   <a class="navbar-brand d-flex align-items-center" href="/">
+     <img src="/static/logo.png" alt="Lion Turtle logo" width="42" height="42"
+         class="me-2">
+     <span class="fw-bold">Lion Turtle Tea Company</span>
+   </a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/virtual-terminal">VirtualTerminal</a>
+        <a class="nav-link" href="/shop">Shop</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/donate">Donate</a>
       </li>
       <li class="nav-item dropdown">
   <a class="nav-link dropdown-toggle"

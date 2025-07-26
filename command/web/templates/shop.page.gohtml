@@ -1,0 +1,35 @@
+{{template "base" .}}
+
+{{define "title"}}Shop{{end}}
+
+{{define "content"}}
+  {{$teas := index .Data "teas"}}
+
+  <h1 class="my-4 text-center">Our Teas</h1>
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+    {{range $teas}}
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          {{if .Image}}
+            <img src="/static/{{.Image}}" class="card-img-top" alt="{{.Name}}">
+          {{else}}
+            <img src="/static/tea.png" class="card-img-top" alt="No image">
+          {{end}}
+
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{.Name}}</h5>
+            <p class="card-text small">{{.Description}}</p>
+            <p class="fw-bold mb-2">{{formatCurrency .Price}}</p>
+
+            {{if gt .InventoryAmt 0}}
+              <a href="/tea/{{.ID}}" class="btn btn-sencha mt-auto">Buy Now</a>
+            {{else}}
+              <button class="btn btn-secondary mt-auto" disabled>Sold Out</button>
+            {{end}}
+          </div>
+        </div>
+      </div>
+    {{end}}
+  </div>
+{{end}}

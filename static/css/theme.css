@@ -1,0 +1,9 @@
+.btn-sencha{
+  --bs-btn-bg:#1B3D24;
+  --bs-btn-border-color:#1B3D24;
+  --bs-btn-hover-bg:#21492C;
+  --bs-btn-hover-border-color:#21492C;
+  color:#fff!important;
+  background:#1B3D24!important;
+  border-color:#1B3D24!important;
+}

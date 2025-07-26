@@ -11,17 +11,17 @@ func (app *application) routes() http.Handler {
 
 	mux.Use(SessionLoad)
 
+	fileServer := http.FileServer(http.Dir("./static"))
+	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
+
 	mux.Get("/", app.Home)
 
-	mux.Get("/virtual-terminal", app.VirtualTerminal)
+	mux.Get("/donate", app.VirtualTerminal)
 	mux.Post("/payment-succeeded", app.PaymentReceipt)
 	mux.Get("/receipt", app.Receipt)
+	mux.Get("/shop", app.Shop)
 
 	mux.Get("/tea/{id}", app.ChargeOnce)
-
-	fileServer := http.FileServer(http.Dir("./static"))
-
-	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
 	return mux
 }

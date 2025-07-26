@@ -1,10 +1,19 @@
 {{template "base" .}}
 
-
-{{define "title"}}
-    Home - TeaShop
-{{end}}
+{{define "title"}}Welcome to The Lion Turtle Tea Company{{end}}
 
 {{define "content"}}
-    <h2 class="mt-5">Teas</h2>
+  <section class="py-5 text-center">
+    <img src="/static/logo.png" alt="TeaShop" width="110" class="mb-4">
+    <h1 class="display-5 fw-bold">Loose‑leaf tea, sourced with care</h1>
+
+    <p class="lead">
+      We partner directly with tea farms in China, Japan, Taiwan, India, and
+      Nepal to bring you fresh, ethically traded tea. Every order is packed by
+      hand in compostable bags in Montréal, Canada. We value above all, our customers, good tea, and taking care of our planet.
+      We are The Lion Turtle Tea Company.
+    </p>
+
+    <a href="/shop" class="btn btn-sencha mt-auto">Shop All Teas</a>
+  </section>
 {{end}}
