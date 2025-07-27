@@ -23,5 +23,9 @@ func (app *application) routes() http.Handler {
 
 	mux.Get("/tea/{id}", app.ChargeOnce)
 
+	// auth routes
+
+	mux.Get("/login", app.LoginPage)
+
 	return mux
 }

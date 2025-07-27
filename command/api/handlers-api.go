@@ -83,6 +83,57 @@ func (app *application) GetTeaByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	out, err := json.MarshalIndent(tea, "", "  ")
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(out)
+}
+
+func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) {
+	var userInput struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	err := app.readJSON(w, r, &userInput)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	// get usr from DB by email
+
+	user, err := app.DB.GetUserByEmail(userInput.Email)
+
+	if err != nil {
+		app.invalidCredentials(w)
+		return
+	}
+
+	// validate the input password, send an err if it's invalid
+
+	validPassword, err := app.passwordMatches(user.Password, userInput.Password)
+
+	if err != nil {
+		app.invalidCredentials(w)
+		return
+	}
+
+	if !validPassword {
+		app.invalidCredentials(w)
+		return
+	}
+
+	// now, if we have a valid user email & the password is also valid for
+	// that user, we can generate the token
+
+	var payload struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	payload.Error = false
+
+	payload.Message = "Success!"
+
+	_ = app.writeJSON(w, http.StatusOK, payload)
 }

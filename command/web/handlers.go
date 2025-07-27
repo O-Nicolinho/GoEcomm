@@ -322,3 +322,11 @@ func (app *application) serverError(w http.ResponseWriter, err error) {
 func (app *application) clientError(w http.ResponseWriter, status int, msg string) {
 	http.Error(w, msg, status)
 }
+
+func (app *application) LoginPage(w http.ResponseWriter, r *http.Request) {
+
+	if err := app.renderTemplate(w, r, "login", &templateData{}); err != nil {
+		app.errorLog.Print(err)
+	}
+
+}
