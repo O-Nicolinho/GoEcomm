@@ -39,7 +39,7 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
+      <li id="donate-link" class="nav-item">
         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
@@ -54,7 +54,7 @@
     </ul>
 
     <ul class="navbar-nav ms-auto mb-2 mblg-0">
-      <li class="nav-item">
+      <li id="login-link" class="nav-item d-none">
         <a class="nav-link" href="/login">Login</a></li>
         </li>
     </ul>
@@ -83,11 +83,42 @@
         integrity="sha384-ltrjvnR4/JpsMHy2npjF6BlYtV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPM"
         crossorigin="anonymous"></script>
 
+
+    <script>
+    let loginLink = document.getElementById("login-link");
+
+    document.addEventListener("DOMContentLoaded", function() {
+      if (localStorage.getItem("token") !== null) {
+        loginLink.innerHTML = '<a class="nav-link" onclick="logout()" href="/#!">Logout</a></li>';
+      } else {
+        loginLink.innerHTML = '<a class="nav-link" href="/login">Login</a></li>';
+      }
+      loginLink.classList.remove("d-none")
+    })
+
+    function logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("token_expiry");
+
+      location.href = "/login"
+
+    }
+
+    </script>
+
+  {{block "js" . }}
+
+
+
+  {{end}}
+
+
+
   </body>
 
 
-    {{block "js" . }}
-    {{end}}
+
+  
 
 </html>
 

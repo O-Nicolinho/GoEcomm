@@ -93,6 +93,7 @@ function val() {
             localStorage.setItem('token', data.authentication_token.token)
             localStorage.setItem('token_expiry', data.authentication_token.expiry)
             showSuccess();
+            location.href = "/";
 
         } else {
             showError(data.message);
