@@ -2,12 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 
 	"github.com/O-Nicolinho/GoEcomm/internal/cards"
+	"github.com/O-Nicolinho/GoEcomm/internal/models"
 )
 
 // info we're receiving from frontend
@@ -126,14 +129,33 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 	// now, if we have a valid user email & the password is also valid for
 	// that user, we can generate the token
 
+	token, err := models.GenerateToken(user.ID, 24*time.Hour, models.ScopeAuthentication)
+
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	// now we save it to the db
+
+	err = app.DB.InsertToken(token, user)
+
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
 	var payload struct {
-		Error   bool   `json:"error"`
-		Message string `json:"message"`
+		Error   bool          `json:"error"`
+		Message string        `json:"message"`
+		Token   *models.Token `json:"authentication_token"`
 	}
 
 	payload.Error = false
 
-	payload.Message = "Success!"
+	payload.Message = fmt.Sprintf("token for %s created.", userInput.Email)
+
+	payload.Token = token
 
 	_ = app.writeJSON(w, http.StatusOK, payload)
 }

@@ -303,6 +303,8 @@ func (m *DBModel) InsertOrderTx(tx *sql.Tx, order Order) (int, error) {
 	return int(id), nil
 }
 
+// Checks DB to see if a user with input email exists,
+// returns the user if it exists, returns error otherwise
 func (m *DBModel) GetUserByEmail(email string) (User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
