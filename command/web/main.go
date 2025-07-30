@@ -8,9 +8,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/O-Nicolinho/GoEcomm/internal/driver"
+	"github.com/O-Nicolinho/GoEcomm/internal/mail"
 	"github.com/O-Nicolinho/GoEcomm/internal/models"
 	"github.com/alexedwards/scs/v2"
 )
@@ -32,9 +34,17 @@ type config struct {
 		secret string
 		key    string
 	}
+	smtp struct {
+		host string
+		port int
+		user string
+		pass string
+		from string
+	}
 }
 
 type application struct {
+	mailer        mail.Sender
 	config        config
 	infoLog       *log.Logger
 	errorLog      *log.Logger
@@ -98,7 +108,11 @@ func main() {
 	tc := make(map[string]*template.Template)
 
 	app := &application{
-		config:        cfg,
+		config: cfg,
+		mailer: mail.Sender{
+			Host: cfg.smtp.host, Port: cfg.smtp.port,
+			User: cfg.smtp.user, Pass: cfg.smtp.pass, From: cfg.smtp.from,
+		},
 		infoLog:       infoLog,
 		errorLog:      errorLog,
 		templateCache: tc,
@@ -106,6 +120,12 @@ func main() {
 		DB:            models.DBModel{DB: conn},
 		Session:       session,
 	}
+
+	cfg.smtp.host = os.Getenv("SMTP_HOST")
+	cfg.smtp.port, _ = strconv.Atoi(os.Getenv("SMTP_PORT"))
+	cfg.smtp.user = os.Getenv("SMTP_USER")
+	cfg.smtp.pass = os.Getenv("SMTP_PASS")
+	cfg.smtp.from = os.Getenv("SMTP_FROM")
 
 	err = app.serve()
 

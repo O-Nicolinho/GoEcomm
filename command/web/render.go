@@ -24,6 +24,7 @@ type templateData struct {
 
 var functions = template.FuncMap{
 	"formatCurrency": formatCurrency,
+	"truncate":       truncate,
 }
 
 func formatCurrency(n int) string {
@@ -104,4 +105,13 @@ func (app *application) parseTemplate(partials []string, page, templateToRender 
 
 	return t, nil
 
+}
+
+func truncate(s string, limit int) string {
+	// keep rune‑safe so we don’t split multibyte chars
+	r := []rune(s)
+	if len(r) <= limit {
+		return s
+	}
+	return string(r[:limit]) + "…"
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -41,13 +42,19 @@ func (app *application) Shop(w http.ResponseWriter, r *http.Request) {
 
 // displays the home page
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
+	teas, err := app.DB.LatestTeas(3)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-	stringMap := make(map[string]string)
-	stringMap["publishable_key"] = app.config.stripe.key
+	data := map[string]interface{}{
+		"new":             teas,
+		"publishable_key": app.config.stripe.key,
+	}
 
-	if err := app.renderTemplate(w, r, "home", &templateData{
-		StringMap: stringMap,
-	}, "stripe-js"); err != nil {
+	if err := app.renderTemplate(w, r, "home",
+		&templateData{Data: data}, "stripe-js"); err != nil {
 		app.errorLog.Println(err)
 	}
 }
@@ -329,4 +336,30 @@ func (app *application) LoginPage(w http.ResponseWriter, r *http.Request) {
 		app.errorLog.Print(err)
 	}
 
+}
+
+func (app *application) Contact(w http.ResponseWriter, r *http.Request) {
+	sent := r.URL.Query().Get("sent") == "1"
+	data := map[string]interface{}{"sent": sent}
+	_ = app.renderTemplate(w, r, "contact", &templateData{Data: data})
+}
+
+func (app *application) PostContact(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		app.clientError(w, http.StatusBadRequest, "Bad form")
+		return
+	}
+
+	name := r.Form.Get("name")
+	email := r.Form.Get("email")
+	subject := r.Form.Get("subject")
+	body := r.Form.Get("message")
+
+	go app.mailer.Send(
+		"hello@lionturtletea.com", // company inbox
+		"Website enquiry: "+subject,
+		fmt.Sprintf("%s <%s>\n\n%s", name, email, body),
+	)
+
+	http.Redirect(w, r, "/contact?sent=1", http.StatusSeeOther)
 }

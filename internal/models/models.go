@@ -337,3 +337,26 @@ func (m *DBModel) GetUserByEmail(email string) (User, error) {
 
 	return u, nil
 }
+
+func (m *DBModel) LatestTeas(n int) ([]*Teas, error) {
+	rows, err := m.DB.QueryContext(context.Background(),
+		`SELECT id, name, description, price, image, created_at
+         FROM teas
+         ORDER BY created_at DESC
+         LIMIT ?`, n)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var teas []*Teas
+	for rows.Next() {
+		var t Teas
+		if err := rows.Scan(&t.ID, &t.Name, &t.Description,
+			&t.Price, &t.Image, &t.TimeCreated); err != nil {
+			return nil, err
+		}
+		teas = append(teas, &t)
+	}
+	return teas, rows.Err()
+}

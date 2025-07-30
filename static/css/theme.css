@@ -7,3 +7,21 @@
   background:#1B3D24!important;
   border-color:#1B3D24!important;
 }
+
+
+.tea-thumb{
+    height: 150px;          
+    object-fit: cover;
+}
+
+
+.btn-sencha{
+    background-color: #5d9b63;   
+    color: #fff;
+    border: none;
+}
+.btn-sencha:hover,
+.btn-sencha:focus{
+    background-color: #4d8653;  
+    color: #fff;
+}

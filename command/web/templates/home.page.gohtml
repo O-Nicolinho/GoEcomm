@@ -11,9 +11,43 @@
       We partner directly with tea farms in China, Japan, Taiwan, India, and
       Nepal to bring you fresh, ethically traded tea. Every order is packed by
       hand in compostable bags in Montréal, Canada. We value above all, our customers, good tea, and taking care of our planet.
-      We are The Lion Turtle Tea Company.
+      We are the Lion Turtle Tea Company.
     </p>
 
     <a href="/shop" class="btn btn-sencha mt-auto">Shop All Teas</a>
+
+    <hr class="my-5">
+
+    <h2 class="mt-5">New arrivals</h2>
+
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+    {{range .Data.new}}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <img src="/static/{{.Image}}" class="card-img-top tea-thumb"
+                 alt="{{.Name}}">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{.Name}}</h5>
+                <p class="card-text small text-muted">{{.Description}}</p>
+                <p class="fw-bold mb-1">{{formatCurrency .Price}}</p>
+                <a href="/tea/{{.ID}}" class="btn btn-sencha mt-auto w-100">Buy&nbsp;now</a>
+            </div>
+        </div>
+    </div>
+    {{end}}
+</div>
+
+<hr class="my-5">
+
+<div class="p-5 bg-light rounded-3 text-center">
+    <h2 class="mb-3">Questions, concerns or suggestions?</h2>
+    <p class="lead mb-4">
+        Whether you need steeping tips, shipping info, or you have suggestions or concerns you'd like to voice,
+        contact us here! We will be more than happy to assist you in any way we can.
+    </p>
+    <a href="/contact" class="btn btn-sencha btn-lg">Contact&nbsp;Us</a>
+</div>
+
+
   </section>
 {{end}}
