@@ -25,3 +25,9 @@
     background-color: #4d8653;  
     color: #fff;
 }
+
+img.card-img-top.shop-thumb{
+    width:100%;
+    height:180px !important;   /* force override */
+    object-fit:cover;
+}
