@@ -23,5 +23,5 @@
 
 ## =============== Demo ===============
 
-<video src="docs/Demo.mp4" width="800" controls muted loop></video>
+![App demo](docs/demo.gif)
 
