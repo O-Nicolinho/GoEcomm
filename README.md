@@ -23,5 +23,5 @@
 
 ## =============== Demo ===============
 
-![App demo](docs/demo.gif)
+![App demo](docs/Demo.gif)
 
