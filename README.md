@@ -23,5 +23,5 @@
 
 ## =============== Demo ===============
 
-![demo](docs/demo.mp4)
+![demo](docs/Demo.mp4)
 
