@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/O-Nicolinho/GoEcomm/internal/driver"
-	"github.com/O-Nicolinho/GoEcomm/internal/models"
+	"github.com/O-Nicolinho/LT-TeaCompany-WebApp/internal/driver"
+	"github.com/O-Nicolinho/LT-TeaCompany-WebApp/internal/models"
 )
 
 //uwu

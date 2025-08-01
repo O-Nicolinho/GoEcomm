@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/O-Nicolinho/GoEcomm/internal/cards"
-	"github.com/O-Nicolinho/GoEcomm/internal/models"
+	"github.com/O-Nicolinho/LT-TeaCompany-WebApp/internal/cards"
+	"github.com/O-Nicolinho/LT-TeaCompany-WebApp/internal/models"
 	"github.com/go-chi/chi/v5"
 )
 

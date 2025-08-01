@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/O-Nicolinho/GoEcomm/internal/cards"
-	"github.com/O-Nicolinho/GoEcomm/internal/models"
+	"github.com/O-Nicolinho/LT-TeaCompany-WebApp/internal/cards"
+	"github.com/O-Nicolinho/LT-TeaCompany-WebApp/internal/models"
 )
 
 // info we're receiving from frontend
