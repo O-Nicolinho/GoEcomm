@@ -1,4 +1,4 @@
-# Lion Turtle Tea Company Web App
+# LT Tea Company Web App
 
 ## =============== Features ===============
 
