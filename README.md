@@ -23,5 +23,5 @@
 
 ## =============== Demo ===============
 
-![demo](docs/Demo.mp4)
+<video src="docs/Demo.mp4" width="800" controls muted loop></video>
 
