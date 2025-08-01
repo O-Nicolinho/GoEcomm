@@ -265,6 +265,41 @@ func (app *application) Receipt(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *application) DonateReceipt(w http.ResponseWriter, r *http.Request) {
+
+	txnData, err := app.GetTransactionData(r)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	customerID, err := app.SaveCustomer(txnData.FirstName, txnData.LastName, txnData.Email)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	txn := models.Transaction{
+		Amount:              txnData.PaymentAmount,
+		Currency:            txnData.PaymentCurrency,
+		LastFour:            txnData.LastFour,
+		ExpiryMonth:         txnData.ExpiryMonth,
+		ExpiryYear:          txnData.ExpiryYear,
+		BankReturnCode:      txnData.BankReturnCode,
+		PaymentIntent:       txnData.PaymentIntentID,
+		PaymentMethod:       txnData.PaymentMethodID,
+		TransactionStatusID: 2,
+		CustomerID:          customerID,
+	}
+	if _, err = app.SaveTransaction(txn); err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.Session.Put(r.Context(), "receipt", txnData)
+	http.Redirect(w, r, "/receipt", http.StatusSeeOther)
+}
+
 func (app *application) SaveCustomer(firstName, lastName, email string) (int, error) {
 	customer := models.Customer{
 		FirstName: firstName,
